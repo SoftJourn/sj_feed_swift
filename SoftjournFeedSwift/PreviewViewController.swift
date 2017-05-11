@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import XCDYouTubeKit
 import SVProgressHUD
 
 
@@ -124,13 +123,7 @@ extension PreviewViewController {
     
     let item = items[indexPath.row % self.items.count] as FeedItemModel
     var cell : BasePreviewCollectionViewCell
-    switch item.type! {
-    case .youtube:
-      cell =   self.createYoutubeCell(item.internalIdentifier, collectionView: collectionView, indexPath: indexPath)
-    case .image:
       cell =  self.createPhotoCell(item.url, collectionView: collectionView, indexPath: indexPath)
-    }
-    
     return cell
   }
   
@@ -164,12 +157,6 @@ extension PreviewViewController {
     collectionView.selectItem(at: selectedItemIndexIndexPath, animated: true, scrollPosition: UICollectionViewScrollPosition())
     collectionView.scrollToItem(at: selectedItemIndexIndexPath, at: UICollectionViewScrollPosition(), animated: true)
     setNeedsFocusUpdate()
-  }
-  
-  func createYoutubeCell(_ youTubeID: String?, collectionView: UICollectionView, indexPath: IndexPath) -> VideoPreviewCollectionViewCell {
-    let videoCell = collectionView.dequeueReusableCell(withReuseIdentifier: VideoPreviewCollectionViewCell.identifier, for: indexPath) as! VideoPreviewCollectionViewCell
-    if (youTubeID?.characters.count)! > 0 { videoCell.youTubeVideoID = youTubeID }
-    return videoCell
   }
   
   func createPhotoCell(_ imageString: String?, collectionView: UICollectionView, indexPath: IndexPath) -> PhotoPreviewCollectionViewCell {

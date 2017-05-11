@@ -39,6 +39,7 @@ class PhotoGalleryCollectionViewCell: BaseGalleryCollectionViewCell {
     circularProgressBar.lineWidth = 8.0
     //    circularProgressBar.colors = [UIColor(red:0.88, green:0.85, blue:0.18, alpha:1.0), UIColor(red:0.56, green:0.76, blue:0.10, alpha:1.0), UIColor(red:0.21, green:0.46, blue:0.21, alpha:1.0)]
     circularProgressBar.transform = CGAffineTransform(rotationAngle: CGFloat(-M_PI_2));
+    circularProgressBar.isHidden = true
   }
   
   func resetProgress() {
@@ -49,7 +50,7 @@ class PhotoGalleryCollectionViewCell: BaseGalleryCollectionViewCell {
   
   override func startPlaying() {
     super.startPlaying()
-    
+    circularProgressBar.isHidden = false
     if (timer?.isValid ?? false) { timer!.invalidate()}
     
     let interval = 1 / Double (PhotoGalleryCollectionViewCell.updatesPerSecond)
@@ -65,7 +66,7 @@ class PhotoGalleryCollectionViewCell: BaseGalleryCollectionViewCell {
   
   override func stopPlaying() {
     super.stopPlaying()
-    
+    circularProgressBar.isHidden = true
     resetProgress()
   }
   

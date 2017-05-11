@@ -13,7 +13,7 @@ protocol GalleryPresenterDelegate: class {
   func displayingItem(_ itemIndex : Int)
 }
 
-class GalleryViewController: UIViewController, VideoPresenterDelegate {
+class GalleryViewController: UIViewController {
   
   @IBOutlet weak var collectionView: UICollectionView?
   
@@ -47,61 +47,47 @@ class GalleryViewController: UIViewController, VideoPresenterDelegate {
     
     if (firstAppearance){
       firstAppearance = false
-      if (PreferencesManager.autoPlay){
-      let selectedIndexPath = IndexPath(row: selectedItemIndex, section: 0)
-      if let selectedCell = collectionView?.cellForItem(at: selectedIndexPath) as? VideoGalleryCollectionViewCell {
-        selectedCell.startPlaying()
-      }
     }
   }
-}
-
-override func viewDidLayoutSubviews() {
-  super.viewDidLayoutSubviews()
-  if (firstAppearance){
-    selectItem(selectedItemIndex, animated: false)
-  }
-}
-
-override func viewWillDisappear(_ animated: Bool) {
-  if let selectedCell = collectionView?.cellForItem(at: IndexPath(row: visibleItemIndex, section: 0)) as? BaseGalleryCollectionViewCell {
-    selectedCell.stopPlaying()
-    delegate?.displayingItem(selectedItemIndex)
-  }
-  super.viewWillDisappear(animated)
-}
-
-func presentVideoViewController(_ withUrl : URL) {
-  NotificationCenter.default.addObserver(self, selector: #selector(self.finishVideoPresentation), name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: nil)
   
-  let playerViewController = AVPlayerViewController()
-  playerViewController.player = AVPlayer(url: withUrl)
-  self.present(playerViewController, animated: true, completion: {
-    [unowned playerViewController] in
-    playerViewController.player?.play()
-    })
-}
-
-func finishVideoPresentation () {
-  NotificationCenter.default.removeObserver(self, name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: nil)
-  self.dismiss(animated: true , completion: {[unowned self] in self.selectNextItem()})
-  
-}
-
-func switchPlayBackState() {
-  if let visibleCell = self.collectionView?.cellForItem(at: IndexPath(row: visibleItemIndex, section: 0)) as? BaseGalleryCollectionViewCell
-  { visibleCell.switchPlayBackState() }
-}
-
-func finishedScrolling() {
-  updateSelectedItem()
-  if (PreferencesManager.autoPlay){
-    let selectedIndexPath = IndexPath(row: visibleItemIndex, section: 0)
-    if let selectedCell = collectionView!.cellForItem(at: selectedIndexPath) as? BaseGalleryCollectionViewCell {
-      selectedCell.startPlaying()
+  override func viewDidLayoutSubviews() {
+    super.viewDidLayoutSubviews()
+    if (firstAppearance){
+      selectItem(selectedItemIndex, animated: false)
     }
   }
-}
+  
+  override func viewWillDisappear(_ animated: Bool) {
+    updateSelectedItem()
+    delegate?.displayingItem(visibleItemIndex)
+    super.viewWillDisappear(animated)
+  }
+  
+  func presentVideoViewController(_ withUrl : URL) {
+    NotificationCenter.default.addObserver(self, selector: #selector(self.finishVideoPresentation), name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: nil)
+    
+    let playerViewController = AVPlayerViewController()
+    playerViewController.player = AVPlayer(url: withUrl)
+    self.present(playerViewController, animated: true, completion: {
+      [unowned playerViewController] in
+      playerViewController.player?.play()
+      })
+  }
+  
+  func finishVideoPresentation () {
+    NotificationCenter.default.removeObserver(self, name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: nil)
+    self.dismiss(animated: true , completion: {[unowned self] in self.selectNextItem()})
+    
+  }
+  
+  func switchPlayBackState() {
+    if let visibleCell = self.collectionView?.cellForItem(at: IndexPath(row: visibleItemIndex, section: 0)) as? BaseGalleryCollectionViewCell
+    { visibleCell.switchPlayBackState() }
+  }
+  
+  func finishedScrolling() {
+    updateSelectedItem()
+  }
 }
 
 extension GalleryViewController: UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout{
@@ -116,13 +102,9 @@ extension GalleryViewController: UICollectionViewDataSource, UICollectionViewDel
   @objc(collectionView:cellForItemAtIndexPath:) func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
     let item = items[indexPath.row] as FeedItemModel
     var cell : BaseGalleryCollectionViewCell
-    switch item.type! {
-    case .youtube:
-      cell = createYoutubeCell(item.internalIdentifier, collectionView: collectionView, indexPath: indexPath)
-    case .image:
-      let duration = item.duration ?? ContentManager.sharedInstance.feedModel?.defaultDuration ?? 10
-      cell = createPhotoCell(item.url, duration: duration, collectionView: collectionView, indexPath: indexPath)
-    }
+    
+    let duration = item.duration ?? ContentManager.sharedInstance.feedModel?.defaultDuration ?? 10
+    cell = createPhotoCell(item.url, duration: duration, collectionView: collectionView, indexPath: indexPath)
     cell.setFinishPresentation({
       [weak self] in
       self?.selectNextItem()
@@ -164,17 +146,11 @@ extension GalleryViewController: UICollectionViewDataSource, UICollectionViewDel
   fileprivate func selectItem(_ atIndex: Int, animated: Bool) {
     visibleItemIndex = atIndex
     let selectedIndexPath = IndexPath(row: atIndex, section: 0)
-      self.collectionView?.scrollToItem(at: selectedIndexPath, at: UICollectionViewScrollPosition.centeredHorizontally, animated: animated)
-      self.collectionView?.setNeedsFocusUpdate()
-      self.collectionView?.updateFocusIfNeeded()
+    self.collectionView?.scrollToItem(at: selectedIndexPath, at: UICollectionViewScrollPosition.centeredHorizontally, animated: animated)
+    self.collectionView?.setNeedsFocusUpdate()
+    self.collectionView?.updateFocusIfNeeded()
   }
   
-  func createYoutubeCell(_ youTubeID: String?, collectionView: UICollectionView, indexPath: IndexPath) -> VideoGalleryCollectionViewCell {
-    let videoCell = collectionView.dequeueReusableCell(withReuseIdentifier: VideoGalleryCollectionViewCell.identifier, for: indexPath) as! VideoGalleryCollectionViewCell
-    videoCell.delegate = self
-    if (youTubeID?.characters.count)! > 0 { videoCell.youTubeVideoID = youTubeID }
-    return videoCell
-  }
   
   func createPhotoCell(_ imageString: String?, duration: Int, collectionView: UICollectionView, indexPath: IndexPath) -> PhotoGalleryCollectionViewCell {
     let photoCell = collectionView.dequeueReusableCell(withReuseIdentifier: PhotoGalleryCollectionViewCell.identifier, for: indexPath) as! PhotoGalleryCollectionViewCell

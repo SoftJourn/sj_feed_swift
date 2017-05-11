@@ -13,7 +13,7 @@ class PreferencesViewController: UIViewController, UITableViewDataSource, UITabl
   enum PreferenceType : Int {
     case layoutStyle
     case serverUrl
-    case autoPlay
+//    case autoPlay
     case refreshContent
     case refreshRate
     case reset
@@ -26,8 +26,8 @@ class PreferencesViewController: UIViewController, UITableViewDataSource, UITabl
       return ("Preferred Layout style", PreferencesManager.preferredLayout.title())
     case .serverUrl:
       return ("Server URL", PreferencesManager.baseUrl)
-    case .autoPlay:
-      return ("Autoplay Video", PreferencesManager.autoPlay ? "Yes" : "No")
+//    case .autoPlay:
+//      return ("Autoplay Video", PreferencesManager.autoPlay ? "Yes" : "No")
     case .refreshContent:
       return ("Refresh content", "")
     case .refreshRate:
@@ -95,15 +95,15 @@ class PreferencesViewController: UIViewController, UITableViewDataSource, UITabl
     self.present(alert, animated: true, completion: nil)
   }
   
-  func switchAutoPlay () {
-    PreferencesManager.autoPlay = !PreferencesManager.autoPlay
-    self.tableView.reloadRows(at: [IndexPath(row: PreferenceType.autoPlay.rawValue, section: 0)], with: UITableViewRowAnimation.none)
-  }
+//  func switchAutoPlay () {
+//    PreferencesManager.autoPlay = !PreferencesManager.autoPlay
+//    self.tableView.reloadRows(at: [IndexPath(row: PreferenceType.autoPlay.rawValue, section: 0)], with: UITableViewRowAnimation.none)
+//  }
 }
 
 extension PreferencesViewController {
   func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-    return 6
+    return 5
   }
   
   @objc(tableView:cellForRowAtIndexPath:) func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -122,8 +122,8 @@ extension PreferencesViewController {
       showLayoutSelectDialog()
     case .serverUrl:
       self.showServerUrlInput()
-    case .autoPlay:
-      switchAutoPlay()
+//    case .autoPlay:
+//      switchAutoPlay()
     case .refreshContent:
       ContentManager.sharedInstance.updateContent()
     case .refreshRate:

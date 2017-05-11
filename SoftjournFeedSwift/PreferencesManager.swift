@@ -57,14 +57,14 @@ class PreferencesManager: NSObject {
     }
   }
   
-  class var autoPlay: Bool {
-    get {
-      return Defaults[.autoPlay]
-    }
-    set(newAutoPlay) {
-      Defaults[.autoPlay] = newAutoPlay
-    }
-  }
+//  class var autoPlay: Bool {
+//    get {
+//      return Defaults[.autoPlay]
+//    }
+//    set(newAutoPlay) {
+//      Defaults[.autoPlay] = newAutoPlay
+//    }
+//  }
   
   class var contentRefreshPeriod: Int {
     get {
@@ -78,7 +78,7 @@ class PreferencesManager: NSObject {
   
   class func setInitialValues() {
     self.baseUrl = PreferencesManager.defaultUrl
-    self.autoPlay = true
+//    self.autoPlay = true
     self.contentRefreshPeriod = 30
     self.preferredLayout = .verticalLarge
   }

@@ -23,12 +23,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     let tabBarController = UITabBarController()
     var controllers = [UIViewController]()
     
-    for type in GalleryContentType.allValues {
-      let feedViewController = storyboard.instantiateViewController(withIdentifier: "MainColectionController") as! PreviewViewController
-      feedViewController.contentType = type
-      feedViewController.tabBarItem = UITabBarItem(title: type.rawValue, image: nil, selectedImage: nil)
-      controllers.append(feedViewController)
-    }
+    //    for type in GalleryContentType.allValues {
+    let type = GalleryContentType.photos
+    let feedViewController = storyboard.instantiateViewController(withIdentifier: "MainColectionController") as! PreviewViewController
+    feedViewController.contentType = type
+    feedViewController.tabBarItem = UITabBarItem(title: "Pictures", image: nil, selectedImage: nil)
+    controllers.append(feedViewController)
+    //    }
     
     let preferencesViewController = storyboard.instantiateViewController(withIdentifier: "PreferencesViewController")
     preferencesViewController.tabBarItem = UITabBarItem(title: "Preferences", image: nil, selectedImage: nil)
